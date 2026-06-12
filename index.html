@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数学は、遊べる。</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F9FA;
+  --grid:#DCE9F0;
+  --grid-strong:#C9DCE7;
+  --ink:#1B2A41;
+  --ink-soft:#46586E;
+  --pencil:#8A949E;
+  --red:#D6453D;
+  --blue:#2E6FB7;
+  --display:'Shippori Mincho',serif;
+  --body:'Zen Kaku Gothic New',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;
+  line-height:1.9;
+  font-size:16px;
+}
+.wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 48px;}
+.hero-grid{display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:center}
+.hero h1{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(40px,7vw,64px);
+  letter-spacing:.06em;
+  line-height:1.4;
+}
+.hero h1 .red{color:var(--red)}
+.hero .lede{margin-top:20px;color:var(--ink-soft);max-width:34em}
+.hero .lede strong{color:var(--ink)}
+.spiral-box{position:relative}
+.spiral-box canvas{
+  width:100%;aspect-ratio:1/1;display:block;
+  background:#fff;
+  border:1.5px solid var(--ink);
+  box-shadow:6px 6px 0 var(--grid-strong);
+}
+.spiral-caption{
+  margin-top:10px;font-size:12.5px;color:var(--pencil);
+  font-family:var(--mono);display:flex;justify-content:space-between;align-items:center;gap:8px
+}
+.spiral-caption button{
+  font-family:var(--mono);font-size:12px;border:1px solid var(--pencil);
+  background:#fff;color:var(--ink-soft);padding:2px 10px;cursor:pointer
+}
+.spiral-caption button:hover{border-color:var(--ink);color:var(--ink)}
+.hero-note{
+  margin-top:28px;font-size:14px;color:var(--ink-soft);
+  border-left:3px solid var(--red);padding-left:14px
+}
+
+/* ---------- sections ---------- */
+section.prob{padding:56px 0;border-top:1.5px dashed var(--grid-strong)}
+.q-label{
+  display:inline-block;font-family:var(--display);font-weight:700;
+  color:#fff;background:var(--ink);padding:2px 14px;font-size:15px;
+  letter-spacing:.2em;margin-bottom:14px
+}
+section.prob h2{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(24px,4vw,32px);letter-spacing:.04em;line-height:1.5
+}
+section.prob .desc{margin-top:14px;color:var(--ink-soft);max-width:40em}
+.desc .term{color:var(--red);font-weight:700}
+.panel{
+  margin-top:26px;background:#fff;border:1.5px solid var(--ink);
+  box-shadow:6px 6px 0 var(--grid-strong);padding:20px
+}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.controls label{font-size:13.5px;color:var(--ink-soft)}
+button.act{
+  font-family:var(--body);font-weight:700;font-size:14px;
+  background:var(--red);color:#fff;border:1.5px solid var(--red);
+  padding:7px 18px;cursor:pointer;transition:transform .08s ease
+}
+button.act:hover{transform:translate(-1px,-1px)}
+button.ghost{
+  font-family:var(--body);font-weight:500;font-size:14px;
+  background:#fff;color:var(--ink);border:1.5px solid var(--ink);
+  padding:7px 18px;cursor:pointer
+}
+button.ghost:hover{background:var(--paper)}
+button.ghost.on{background:var(--ink);color:#fff}
+input[type=number]{
+  font-family:var(--mono);font-size:15px;width:120px;
+  border:1.5px solid var(--ink);padding:6px 10px;background:#fff;color:var(--ink)
+}
+input[type=number]:focus{outline:2px solid var(--blue);outline-offset:1px}
+canvas.demo{width:100%;display:block;background:#fff}
+.readout{
+  font-family:var(--mono);font-size:13.5px;color:var(--ink-soft);
+  margin-top:12px;line-height:1.8
+}
+.readout b{color:var(--red);font-weight:600}
+.readout .bl{color:var(--blue);font-weight:600}
+.margin-note{
+  margin-top:16px;font-size:13.5px;color:var(--ink-soft);
+  border-left:3px solid var(--blue);padding-left:14px
+}
+
+/* Monty Hall doors */
+.doors{display:flex;gap:16px;justify-content:center;margin:8px 0 4px}
+.door{
+  flex:1;max-width:140px;aspect-ratio:3/4.6;cursor:pointer;position:relative;
+  background:linear-gradient(180deg,#fff,#f4f7f9);
+  border:2px solid var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:clamp(28px,5vw,44px);font-weight:700;
+  transition:transform .1s ease;user-select:none
+}
+.door:hover{transform:translateY(-3px)}
+.door.picked{outline:3px solid var(--blue);outline-offset:3px}
+.door.open{background:var(--paper)}
+.door.win{background:#FDEBE9;border-color:var(--red);color:var(--red)}
+.door .num{position:absolute;top:8px;left:10px;font-family:var(--mono);font-size:12px;color:var(--pencil)}
+.mh-msg{min-height:2.2em;font-size:14.5px;margin-top:10px;text-align:center}
+.mh-msg b{color:var(--red)}
+.mh-actions{display:flex;gap:10px;justify-content:center;margin-top:8px}
+.mh-stats{display:flex;gap:24px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.mh-stat{font-family:var(--mono);font-size:13px;color:var(--ink-soft);text-align:center}
+.mh-stat .big{display:block;font-size:24px;font-weight:600;color:var(--ink)}
+.mh-stat.sw .big{color:var(--red)}
+
+/* footer */
+footer{padding:64px 0 80px;border-top:1.5px dashed var(--grid-strong)}
+footer p{font-family:var(--display);font-size:clamp(18px,3vw,24px);font-weight:700;letter-spacing:.05em;line-height:2}
+footer .fermat{margin-top:18px;font-family:var(--body);font-size:13.5px;color:var(--pencil);font-weight:400}
+
+@media (max-width:720px){
+  .hero{padding:48px 0 36px}
+  .hero-grid{grid-template-columns:1fr;gap:28px}
+  .spiral-box{max-width:340px}
+  .doors{gap:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  button.act:hover,.door:hover{transform:none}
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>数学は、<br><span class="red">遊べる</span>。</h1>
+        <p class="lede">右の方眼紙では、1, 2, 3, … と数を渦巻きに並べ、<strong>素数だけ</strong>に赤丸をつけています。素数の出現はでたらめのはずなのに、なぜか<strong>斜めの筋</strong>が浮かび上がる——「ウラム螺旋」と呼ばれるこの模様、実は今も完全には説明がついていません。</p>
+        <p class="hero-note">このページの図は全部さわれます。動かして、壊して、たしかめてください。証明より先に、まず手を動かすのが数学の遊び方です。</p>
+      </div>
+      <div class="spiral-box">
+        <canvas id="ulam" aria-label="ウラム螺旋：素数を赤くマークした数の渦巻き"></canvas>
+        <div class="spiral-caption">
+          <span id="ulamCount">n = 1</span>
+          <button id="ulamReplay" type="button">もう一度描く</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="prob" id="collatz">
+  <div class="wrap">
+    <span class="q-label">問 一</span>
+    <h2>どんな数も、なぜか 1 に落ちる。</h2>
+    <p class="desc">好きな正の整数からスタート。<span class="term">偶数なら半分に、奇数なら 3 倍して 1 を足す</span>。これを繰り返すと…どんな数で試しても、最後は必ず 1 に到着します。本当に「必ず」なのかは未解決問題（コラッツ予想）。賞金 1 億 2000 万円がかかっていますが、まだ誰も証明できていません。</p>
+    <div class="panel">
+      <div class="controls">
+        <label for="collatzN">はじめの数</label>
+        <input type="number" id="collatzN" value="27" min="1" max="999999999">
+        <button class="act" id="collatzGo" type="button">落としてみる</button>
+        <button class="ghost" id="collatzRand" type="button">ランダム</button>
+      </div>
+      <canvas class="demo" id="collatzCv" height="300" aria-label="コラッツ数列の軌道グラフ"></canvas>
+      <p class="readout" id="collatzOut">27 みたいな小さい数でも、けっこう暴れます。</p>
+      <p class="margin-note">9663 や 27 を試すと、小さい数とは思えない大ジャンプが見られます。最高到達点とステップ数に注目。</p>
+    </div>
+  </div>
+</section>
+
+<section class="prob" id="ca">
+  <div class="wrap">
+    <span class="q-label">問 二</span>
+    <h2>3 行のルールから、宇宙が生える。</h2>
+    <p class="desc">一番上の行が「種」。各マスは、<span class="term">自分と両隣の 3 マスの状態だけ</span>を見て、次の行で白か黒かが決まります。ルール表はたった 8 通り。なのに、ルール番号を変えるだけで、フラクタルが咲いたり、カオスが渦巻いたり。<strong>一番上の行をクリックして種を変えてみてください。</strong></p>
+    <div class="panel">
+      <div class="controls" role="group" aria-label="ルール選択">
+        <button class="ghost rule-btn" data-rule="90" type="button">Rule 90</button>
+        <button class="ghost rule-btn on" data-rule="30" type="button">Rule 30</button>
+        <button class="ghost rule-btn" data-rule="110" type="button">Rule 110</button>
+        <button class="ghost rule-btn" data-rule="184" type="button">Rule 184</button>
+        <button class="ghost" id="caRandSeed" type="button">種をランダムに</button>
+      </div>
+      <canvas class="demo" id="caCv" aria-label="一次元セルオートマトンの時間発展図。最上段をクリックで初期状態を編集"></canvas>
+      <p class="readout" id="caOut">Rule <b>30</b> — 乱数生成にも使われた「カオス製造機」。</p>
+      <p class="margin-note">Rule 90 はシェルピンスキーの三角形（フラクタル）、Rule 110 は<strong>これだけで計算機が作れる</strong>ことが証明済み、Rule 184 は渋滞のモデル。たった 8 ビットのルール番号にここまで違う世界が入っています。</p>
+    </div>
+  </div>
+</section>
+
+<section class="prob" id="pi">
+  <div class="wrap">
+    <span class="q-label">問 三</span>
+    <h2>雨を降らせて、円周率を測る。</h2>
+    <p class="desc">正方形に円を内接させて、ランダムに点を落とします。<span class="term">円の中に落ちた点の割合 × 4</span> が、だんだん π = 3.14159… に近づいていく——計算式を一切使わずに、偶然だけで円周率が測れてしまう「モンテカルロ法」です。</p>
+    <div class="panel">
+      <div class="controls">
+        <button class="act" id="piToggle" type="button">雨を降らせる</button>
+        <button class="ghost" id="piClear" type="button">リセット</button>
+      </div>
+      <canvas class="demo" id="piCv" aria-label="モンテカルロ法による円周率の推定。正方形内にランダムな点が落ちる"></canvas>
+      <p class="readout" id="piOut">点 0 個 — まだ何もわかりません。</p>
+      <p class="margin-note">最初は乱高下しますが、点が増えるほどゆっくり 3.14159… に吸い寄せられます。精度を 1 桁上げるには点をおよそ 100 倍にする必要がある、というのもこの方法の味わいどころ。</p>
+    </div>
+  </div>
+</section>
+
+<section class="prob" id="monty">
+  <div class="wrap">
+    <span class="q-label">問 四</span>
+    <h2>直感は、ここで一度負ける。</h2>
+    <p class="desc">3 つの扉のどれか 1 つに当たりが入っています。あなたが 1 つ選ぶと、答えを知っている司会者が<span class="term">残りからハズレの扉を 1 つ開けて</span>くれて、「乗り換えますか？」と聞いてきます。乗り換えても確率は半々…に見えますよね。<strong>何度か遊んで、下の集計を見てください。</strong></p>
+    <div class="panel">
+      <div class="doors" id="doors">
+        <div class="door" data-i="0" role="button" tabindex="0" aria-label="扉 1"><span class="num">①</span><span class="face">？</span></div>
+        <div class="door" data-i="1" role="button" tabindex="0" aria-label="扉 2"><span class="num">②</span><span class="face">？</span></div>
+        <div class="door" data-i="2" role="button" tabindex="0" aria-label="扉 3"><span class="num">③</span><span class="face">？</span></div>
+      </div>
+      <p class="mh-msg" id="mhMsg">扉をひとつ選んでください。</p>
+      <div class="mh-actions" id="mhActions" hidden>
+        <button class="ghost" id="mhStay" type="button">このままにする</button>
+        <button class="act" id="mhSwitch" type="button">乗り換える</button>
+      </div>
+      <div class="mh-actions" id="mhAgain" hidden>
+        <button class="act" id="mhReset" type="button">もう一回</button>
+        <button class="ghost" id="mhAuto" type="button">100 回自動プレイ</button>
+      </div>
+      <div class="mh-stats">
+        <div class="mh-stat">そのまま<span class="big" id="stStay">– %</span><span id="stStayN">0 回</span></div>
+        <div class="mh-stat sw">乗り換え<span class="big" id="stSw">– %</span><span id="stSwN">0 回</span></div>
+      </div>
+      <p class="margin-note">理論値は、そのまま <strong>1/3</strong>、乗り換え <strong>2/3</strong>。最初の選択が当たりの確率（1/3）は司会者が扉を開けても変わらない——つまり残りの 2/3 が乗り換え先に集まる、と考えると腑に落ちます。腑に落ちなくても大丈夫、数学者ポール・エルデシュも納得するまで時間がかかりました。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>未解決の予想も、反直感のパラドックスも、<br>入口は「ちょっとさわってみる」こと。<br>数学は、いつでも遊べます。</p>
+    <p class="fermat">— この余白は、それを書くには狭すぎる。（続きはあなたのノートで）</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- helpers ---------- */
+function fitCanvas(cv, hCss){
+  const dpr = devicePixelRatio || 1;
+  const w = cv.clientWidth || cv.parentElement.clientWidth;
+  const h = hCss || cv.clientHeight || 300;
+  cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+  cv.style.height = h+'px';
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx, w, h};
+}
+function isPrime(n){
+  if(n<2) return false;
+  if(n%2===0) return n===2;
+  for(let i=3;i*i<=n;i+=2) if(n%i===0) return false;
+  return true;
+}
+
+/* ---------- Ulam spiral (hero) ---------- */
+const ulam = document.getElementById('ulam');
+const ulamCount = document.getElementById('ulamCount');
+let ulamTimer = null;
+function startUlam(){
+  if(ulamTimer) cancelAnimationFrame(ulamTimer);
+  const {ctx,w,h} = fitCanvas(ulam, ulam.clientWidth);
+  const cells = 61;                       // odd grid
+  const s = Math.min(w,h)/cells;
+  ctx.clearRect(0,0,w,h);
+  // grid
+  ctx.strokeStyle = '#EAF2F7'; ctx.lineWidth = 1;
+  for(let i=0;i<=cells;i++){
+    ctx.beginPath(); ctx.moveTo(i*s,0); ctx.lineTo(i*s,cells*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,i*s); ctx.lineTo(cells*s,i*s); ctx.stroke();
+  }
+  let x=Math.floor(cells/2), y=Math.floor(cells/2);
+  let dx=1, dy=0, leg=1, stepInLeg=0, legsDone=0, n=1;
+  const max = cells*cells;
+  const perFrame = reduced ? max : 23;
+  function drawCell(){
+    const cx=x*s+s/2, cy=y*s+s/2;
+    if(isPrime(n)){
+      ctx.fillStyle='#D6453D';
+      ctx.beginPath(); ctx.arc(cx,cy,s*0.36,0,Math.PI*2); ctx.fill();
+    }else{
+      ctx.fillStyle='#C9D4DD';
+      ctx.fillRect(cx-0.75,cy-0.75,1.5,1.5);
+    }
+    x+=dx; y+=dy; n++; stepInLeg++;
+    if(stepInLeg===leg){
+      stepInLeg=0; legsDone++;
+      const t=dx; dx=-dy; dy=t;          // turn left (counterclockwise on screen)
+      if(legsDone%2===0) leg++;
+    }
+  }
+  function frame(){
+    for(let i=0;i<perFrame && n<=max;i++) drawCell();
+    ulamCount.textContent = 'n = '+Math.min(n-1,max).toLocaleString();
+    if(n<=max) ulamTimer = requestAnimationFrame(frame);
+  }
+  frame();
+}
+document.getElementById('ulamReplay').addEventListener('click', startUlam);
+
+/* ---------- Collatz ---------- */
+const colCv = document.getElementById('collatzCv');
+const colOut = document.getElementById('collatzOut');
+const colIn = document.getElementById('collatzN');
+function collatzSeq(n){
+  const seq=[n];
+  let x=BigInt(n), guard=0;
+  while(x!==1n && guard<5000){
+    x = (x%2n===0n) ? x/2n : 3n*x+1n;
+    seq.push(Number(x)); guard++;
+  }
+  return seq;
+}
+function drawCollatz(){
+  let n = parseInt(colIn.value,10);
+  if(!Number.isFinite(n) || n<1){ colOut.textContent='1 以上の整数を入れてください。'; return; }
+  if(n>999999999) n=999999999, colIn.value=n;
+  const seq = collatzSeq(n);
+  const peak = Math.max(...seq);
+  const {ctx,w,h} = fitCanvas(colCv, 300);
+  const padL=54, padR=14, padT=18, padB=28;
+  const iw=w-padL-padR, ih=h-padT-padB;
+  ctx.clearRect(0,0,w,h);
+  const logMax = Math.log10(peak||1)||1;
+  const X=i=> padL + (seq.length<2?0:(i/(seq.length-1))*iw);
+  const Y=v=> padT + ih - (Math.log10(Math.max(v,1))/logMax)*ih;
+  // axes ticks (log scale)
+  ctx.font='11px "IBM Plex Mono",monospace'; ctx.fillStyle='#8A949E';
+  ctx.strokeStyle='#EAF2F7';
+  for(let e=0;e<=Math.ceil(logMax);e++){
+    const v=Math.pow(10,e), y=Y(v);
+    if(y<padT-2) continue;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    ctx.fillText(v>=1000?(v/1000)+'k':v, 8, y+4);
+  }
+  // path
+  ctx.strokeStyle='#2E6FB7'; ctx.lineWidth=1.6; ctx.beginPath();
+  seq.forEach((v,i)=>{ const x=X(i),y=Y(v); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.stroke();
+  // peak marker
+  const pi = seq.indexOf(peak);
+  ctx.fillStyle='#D6453D';
+  ctx.beginPath(); ctx.arc(X(pi),Y(peak),4,0,Math.PI*2); ctx.fill();
+  ctx.fillText('peak '+peak.toLocaleString(), Math.min(X(pi)+8,w-110), Math.max(Y(peak)-8,12));
+  // end marker
+  ctx.fillStyle='#1B2A41';
+  ctx.beginPath(); ctx.arc(X(seq.length-1),Y(1),3.5,0,Math.PI*2); ctx.fill();
+  ctx.fillText('1', X(seq.length-1)-3, Y(1)+18);
+  colOut.innerHTML = n.toLocaleString()+' は <b>'+(seq.length-1)+' ステップ</b>で 1 に到着。途中の最高点は <span class="bl">'+peak.toLocaleString()+'</span>（縦軸は対数目盛）。';
+}
+document.getElementById('collatzGo').addEventListener('click', drawCollatz);
+document.getElementById('collatzRand').addEventListener('click', ()=>{
+  colIn.value = 2+Math.floor(Math.random()*99998); drawCollatz();
+});
+colIn.addEventListener('keydown', e=>{ if(e.key==='Enter') drawCollatz(); });
+
+/* ---------- Cellular automaton ---------- */
+const caCv = document.getElementById('caCv');
+const caOut = document.getElementById('caOut');
+const caInfo = {30:'乱数生成にも使われた「カオス製造機」。',90:'シェルピンスキーの三角形が自動で生える。',110:'チューリング完全 — このルールだけで計算機が作れる。',184:'車の渋滞そっくりに振る舞う交通モデル。'};
+let caRule=30, caCells=121, caSeed=null, caCellPx=6;
+function caInitSeed(random){
+  caSeed = new Uint8Array(caCells);
+  if(random){ for(let i=0;i<caCells;i++) caSeed[i]=Math.random()<0.5?1:0; }
+  else caSeed[Math.floor(caCells/2)]=1;
+}
+function drawCA(){
+  const wCss = caCv.clientWidth || caCv.parentElement.clientWidth-42;
+  caCells = Math.max(61, Math.floor(wCss/6)|1);     // odd
+  if(!caSeed || caSeed.length!==caCells) caInitSeed(false);
+  caCellPx = wCss/caCells;
+  const rows = 110;
+  const {ctx,w} = fitCanvas(caCv, Math.round(rows*caCellPx)+Math.ceil(caCellPx));
+  ctx.clearRect(0,0,w,rows*caCellPx+caCellPx);
+  let row = caSeed.slice();
+  for(let r=0;r<rows;r++){
+    for(let i=0;i<caCells;i++){
+      if(row[i]){
+        ctx.fillStyle = r===0 ? '#D6453D' : '#1B2A41';
+        ctx.fillRect(i*caCellPx, r*caCellPx, caCellPx+0.5, caCellPx+0.5);
+      }else if(r===0){
+        ctx.fillStyle='#F1F6F9';
+        ctx.fillRect(i*caCellPx, 0, caCellPx-0.5, caCellPx-0.5);
+      }
+    }
+    const next=new Uint8Array(caCells);
+    for(let i=0;i<caCells;i++){
+      const l=row[(i-1+caCells)%caCells], c=row[i], rr=row[(i+1)%caCells];
+      next[i] = (caRule >> (l<<2 | c<<1 | rr)) & 1;
+    }
+    row=next;
+  }
+  caOut.innerHTML = 'Rule <b>'+caRule+'</b> — '+caInfo[caRule];
+}
+document.querySelectorAll('.rule-btn').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.rule-btn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    caRule = parseInt(b.dataset.rule,10);
+    drawCA();
+  });
+});
+document.getElementById('caRandSeed').addEventListener('click', ()=>{ caInitSeed(true); drawCA(); });
+caCv.addEventListener('click', e=>{
+  const rect = caCv.getBoundingClientRect();
+  const y = e.clientY-rect.top;
+  if(y > caCellPx*2.5) return;               // only top row(s) editable
+  const i = Math.floor((e.clientX-rect.left)/caCellPx);
+  if(i>=0 && i<caCells){ caSeed[i]^=1; drawCA(); }
+});
+caCv.style.cursor='pointer';
+
+/* ---------- Monte Carlo pi ---------- */
+const piCv = document.getElementById('piCv');
+const piOut = document.getElementById('piOut');
+const piBtn = document.getElementById('piToggle');
+let piRunning=false, piIn=0, piTotal=0, piCtx=null, piSize=0, piRAF=null;
+function piSetup(clear){
+  piCv.style.width='100%';
+  const wCss = Math.min(piCv.clientWidth, 460);
+  const o = fitCanvas(piCv, wCss);
+  piCtx=o.ctx; piSize=wCss;
+  piCv.style.width=wCss+'px'; piCv.style.margin='0 auto';
+  piCtx.clearRect(0,0,wCss,wCss);
+  piCtx.strokeStyle='#1B2A41'; piCtx.lineWidth=1.5;
+  piCtx.strokeRect(1,1,wCss-2,wCss-2);
+  piCtx.beginPath(); piCtx.arc(wCss/2,wCss/2,wCss/2-1,0,Math.PI*2); piCtx.stroke();
+  if(clear){ piIn=0; piTotal=0; piReport(); }
+}
+function piReport(){
+  if(piTotal===0){ piOut.textContent='点 0 個 — まだ何もわかりません。'; return; }
+  const est = 4*piIn/piTotal;
+  const err = Math.abs(est-Math.PI);
+  piOut.innerHTML = '点 '+piTotal.toLocaleString()+' 個 → 推定値 <b>'+est.toFixed(5)+'</b>（真の値との差 <span class="bl">'+err.toFixed(5)+'</span>）';
+}
+function piStep(){
+  const batch = 120;
+  const r = piSize/2-1;
+  for(let i=0;i<batch;i++){
+    const x=1+Math.random()*2*r, y=1+Math.random()*2*r;
+    const inside = (x-piSize/2)**2 + (y-piSize/2)**2 <= r*r;
+    if(inside) piIn++;
+    piTotal++;
+    piCtx.fillStyle = inside ? 'rgba(46,111,183,.55)' : 'rgba(214,69,61,.55)';
+    piCtx.fillRect(x,y,1.6,1.6);
+  }
+  piReport();
+  if(piRunning) piRAF=requestAnimationFrame(piStep);
+}
+piBtn.addEventListener('click', ()=>{
+  piRunning=!piRunning;
+  piBtn.textContent = piRunning?'止める':'雨を降らせる';
+  if(piRunning) piStep(); else cancelAnimationFrame(piRAF);
+});
+document.getElementById('piClear').addEventListener('click', ()=>{
+  piRunning=false; piBtn.textContent='雨を降らせる';
+  cancelAnimationFrame(piRAF); piSetup(true);
+});
+
+/* ---------- Monty Hall ---------- */
+const doors=[...document.querySelectorAll('.door')];
+const mhMsg=document.getElementById('mhMsg');
+const mhActions=document.getElementById('mhActions');
+const mhAgain=document.getElementById('mhAgain');
+let prize=0, picked=-1, opened=-1, phase='pick';
+const tally={stay:{w:0,n:0}, sw:{w:0,n:0}};
+function mhRender(){
+  doors.forEach((d,i)=>{
+    d.classList.toggle('picked', i===picked && phase!=='done');
+    d.classList.toggle('open', i===opened || phase==='done');
+    d.classList.toggle('win', phase==='done' && i===prize);
+    d.querySelector('.face').textContent =
+      (i===opened) ? '🐐' :
+      (phase==='done') ? (i===prize?'🎁':'🐐') : '？';
+  });
+  const s=tally.stay, w=tally.sw;
+  document.getElementById('stStay').textContent = s.n? (100*s.w/s.n).toFixed(0)+' %':'– %';
+  document.getElementById('stStayN').textContent = s.n+' 回';
+  document.getElementById('stSw').textContent = w.n? (100*w.w/w.n).toFixed(0)+' %':'– %';
+  document.getElementById('stSwN').textContent = w.n+' 回';
+}
+function mhReset(){
+  prize=Math.floor(Math.random()*3); picked=-1; opened=-1; phase='pick';
+  mhMsg.textContent='扉をひとつ選んでください。';
+  mhActions.hidden=true; mhAgain.hidden=true;
+  mhRender();
+}
+function mhPick(i){
+  if(phase!=='pick') return;
+  picked=i; phase='offer';
+  const cand=[0,1,2].filter(d=>d!==picked && d!==prize);
+  opened=cand[Math.floor(Math.random()*cand.length)];
+  mhMsg.innerHTML='司会者が扉 '+'①②③'[opened]+' を開けました（ハズレ）。<b>乗り換えますか？</b>';
+  mhActions.hidden=false;
+  mhRender();
+}
+function mhDecide(sw){
+  if(phase!=='offer') return;
+  const final = sw ? [0,1,2].find(d=>d!==picked&&d!==opened) : picked;
+  const win = final===prize;
+  const t = sw?tally.sw:tally.stay;
+  t.n++; if(win) t.w++;
+  phase='done';
+  mhMsg.innerHTML = win ? '<b>当たり！</b> '+(sw?'乗り換え':'そのまま')+'で勝ちました。' : 'ハズレ… 当たりは扉 '+'①②③'[prize]+' でした。';
+  mhActions.hidden=true; mhAgain.hidden=false;
+  mhRender();
+}
+doors.forEach((d,i)=>{
+  d.addEventListener('click', ()=>mhPick(i));
+  d.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault(); mhPick(i);} });
+});
+document.getElementById('mhStay').addEventListener('click', ()=>mhDecide(false));
+document.getElementById('mhSwitch').addEventListener('click', ()=>mhDecide(true));
+document.getElementById('mhReset').addEventListener('click', mhReset);
+document.getElementById('mhAuto').addEventListener('click', ()=>{
+  for(let k=0;k<100;k++){
+    const p=Math.floor(Math.random()*3), pick=Math.floor(Math.random()*3);
+    const sw=Math.random()<0.5;
+    const cand=[0,1,2].filter(d=>d!==pick&&d!==p);
+    const op=cand[Math.floor(Math.random()*cand.length)];
+    const fin=sw?[0,1,2].find(d=>d!==pick&&d!==op):pick;
+    const t=sw?tally.sw:tally.stay; t.n++; if(fin===p) t.w++;
+  }
+  mhMsg.innerHTML='100 回ぶん追加しました。集計が理論値（1/3 と 2/3）に近づいていきます。';
+  mhRender();
+});
+
+/* ---------- init & resize ---------- */
+function initAll(){ startUlam(); drawCollatz(); drawCA(); piSetup(true); mhReset(); }
+let rsT;
+addEventListener('resize', ()=>{ clearTimeout(rsT); rsT=setTimeout(()=>{ startUlam(); drawCollatz(); drawCA(); const wasRun=piRunning; piRunning=false; cancelAnimationFrame(piRAF); piSetup(false); piIn=0; piTotal=0; piReport(); if(wasRun){piRunning=true; piStep(); piBtn.textContent='止める';} }, 200); });
+initAll();
+})();
+</script>
+</body>
+</html>
